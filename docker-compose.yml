@@ -1,0 +1,18 @@
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: ${PG_USER:-salesonboard}
+      POSTGRES_PASSWORD: ${PG_PASSWORD:-salesonboard}
+      POSTGRES_DB: ${CONTROL_DB:-control}
+    ports:
+      - "${PG_PORT:-5433}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 2s
+      retries: 15
+
+volumes:
+  pgdata:

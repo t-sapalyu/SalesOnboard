@@ -8,6 +8,7 @@ See `dev_plan/SalesOnboard ETL Agent — System Design.md` and `dev_plan/DEVELOP
 ```
 uv sync
 cp .env.sample .env   # then fill in your keys
+docker compose up -d  # Postgres on localhost:5433
 ```
 
 ## Checks

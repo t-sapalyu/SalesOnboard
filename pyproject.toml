@@ -4,7 +4,10 @@ version = "0.1.0"
 description = "Sales ETL Agent: maps a customer's sales export into one canonical table."
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "psycopg[binary]>=3.3.6",
+    "pydantic-settings>=2.16.1",
+]
 
 [dependency-groups]
 dev = [
