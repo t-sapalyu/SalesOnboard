@@ -5,6 +5,7 @@ description = "Sales ETL Agent: maps a customer's sales export into one canonica
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "pandas>=3.1.0",
     "psycopg[binary]>=3.3.6",
     "pydantic-settings>=2.16.1",
 ]
@@ -26,3 +27,6 @@ target-version = "py312"
 [tool.ruff.lint]
 # E/F: errors, I: import order, B: likely bugs, UP: modern syntax, SIM: simpler code
 select = ["E", "F", "I", "B", "UP", "SIM"]
+# SIM110 rewrites simple for loops into all(any(...)) one-liners.
+# A plain loop is easier for a junior engineer to read, so we keep loops.
+ignore = ["SIM110"]
