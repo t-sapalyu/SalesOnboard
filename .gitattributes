@@ -1,0 +1,3 @@
+# Demo files are compared byte for byte in tests, so keep \n line endings
+# even on Windows where git would otherwise convert them to \r\n.
+demo_data/** text eol=lf

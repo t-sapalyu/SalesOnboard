@@ -1,0 +1,126 @@
+{
+  "columns": [
+    {
+      "source": "OrderNo",
+      "status": "mapped",
+      "target": "order_id"
+    },
+    {
+      "source": "OrderDate",
+      "status": "mapped",
+      "target": "order_date"
+    },
+    {
+      "source": "SKU",
+      "status": "mapped",
+      "target": "product_id"
+    },
+    {
+      "source": "Store",
+      "status": "mapped",
+      "target": "store_id"
+    },
+    {
+      "source": "Qty",
+      "status": "mapped",
+      "target": "quantity"
+    },
+    {
+      "source": "UnitPrice",
+      "status": "mapped",
+      "target": "unit_price"
+    },
+    {
+      "source": "SalesRep",
+      "status": "ignored",
+      "reason": "sales person name, no target"
+    }
+  ],
+  "operations": [
+    {
+      "id": "op1",
+      "op": "map_column",
+      "reason": "order number",
+      "created_by": "human",
+      "source": "OrderNo",
+      "target": "order_id"
+    },
+    {
+      "id": "op2",
+      "op": "map_column",
+      "reason": "order date",
+      "created_by": "human",
+      "source": "OrderDate",
+      "target": "order_date"
+    },
+    {
+      "id": "op3",
+      "op": "map_column",
+      "reason": "product code",
+      "created_by": "human",
+      "source": "SKU",
+      "target": "product_id"
+    },
+    {
+      "id": "op4",
+      "op": "map_column",
+      "reason": "store",
+      "created_by": "human",
+      "source": "Store",
+      "target": "store_id"
+    },
+    {
+      "id": "op5",
+      "op": "map_column",
+      "reason": "units sold",
+      "created_by": "human",
+      "source": "Qty",
+      "target": "quantity"
+    },
+    {
+      "id": "op6",
+      "op": "map_column",
+      "reason": "price per unit",
+      "created_by": "human",
+      "source": "UnitPrice",
+      "target": "unit_price"
+    },
+    {
+      "id": "op7",
+      "op": "trim",
+      "reason": "some SKUs have trailing spaces",
+      "created_by": "human",
+      "column": "product_id"
+    },
+    {
+      "id": "op8",
+      "op": "drop_rows",
+      "reason": "rows with no product code",
+      "created_by": "human",
+      "column": "product_id",
+      "when": "empty"
+    },
+    {
+      "id": "op9",
+      "op": "parse_date",
+      "reason": "ISO dates",
+      "created_by": "human",
+      "column": "order_date",
+      "format": "%Y-%m-%d"
+    },
+    {
+      "id": "op10",
+      "op": "cast_number",
+      "reason": "whole numbers",
+      "created_by": "human",
+      "column": "quantity"
+    },
+    {
+      "id": "op11",
+      "op": "cast_number",
+      "reason": "decimal point",
+      "created_by": "human",
+      "column": "unit_price"
+    }
+  ]
+}

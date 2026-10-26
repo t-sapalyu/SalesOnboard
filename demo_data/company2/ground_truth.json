@@ -1,0 +1,112 @@
+{
+  "columns": [
+    {
+      "source": "N° commande",
+      "status": "mapped",
+      "target": "order_id"
+    },
+    {
+      "source": "Date",
+      "status": "mapped",
+      "target": "order_date"
+    },
+    {
+      "source": "Réf produit",
+      "status": "mapped",
+      "target": "product_id"
+    },
+    {
+      "source": "Magasin",
+      "status": "mapped",
+      "target": "store_id"
+    },
+    {
+      "source": "Qté",
+      "status": "mapped",
+      "target": "quantity"
+    },
+    {
+      "source": "Prix unitaire",
+      "status": "mapped",
+      "target": "unit_price"
+    },
+    {
+      "source": "Client",
+      "status": "ignored",
+      "reason": "buyer name, personal data"
+    }
+  ],
+  "operations": [
+    {
+      "id": "op1",
+      "op": "map_column",
+      "reason": "order number",
+      "created_by": "human",
+      "source": "N° commande",
+      "target": "order_id"
+    },
+    {
+      "id": "op2",
+      "op": "map_column",
+      "reason": "order date",
+      "created_by": "human",
+      "source": "Date",
+      "target": "order_date"
+    },
+    {
+      "id": "op3",
+      "op": "map_column",
+      "reason": "product code",
+      "created_by": "human",
+      "source": "Réf produit",
+      "target": "product_id"
+    },
+    {
+      "id": "op4",
+      "op": "map_column",
+      "reason": "store",
+      "created_by": "human",
+      "source": "Magasin",
+      "target": "store_id"
+    },
+    {
+      "id": "op5",
+      "op": "map_column",
+      "reason": "units sold",
+      "created_by": "human",
+      "source": "Qté",
+      "target": "quantity"
+    },
+    {
+      "id": "op6",
+      "op": "map_column",
+      "reason": "price per unit",
+      "created_by": "human",
+      "source": "Prix unitaire",
+      "target": "unit_price"
+    },
+    {
+      "id": "op7",
+      "op": "parse_date",
+      "reason": "day comes first",
+      "created_by": "human",
+      "column": "order_date",
+      "format": "%d/%m/%Y"
+    },
+    {
+      "id": "op8",
+      "op": "cast_number",
+      "reason": "whole numbers",
+      "created_by": "human",
+      "column": "quantity"
+    },
+    {
+      "id": "op9",
+      "op": "cast_number",
+      "reason": "decimal comma",
+      "created_by": "human",
+      "column": "unit_price",
+      "decimal_separator": ","
+    }
+  ]
+}
