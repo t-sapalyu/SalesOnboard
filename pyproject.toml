@@ -5,6 +5,7 @@ description = "Sales ETL Agent: maps a customer's sales export into one canonica
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "openai>=3.42.0",
     "pandas>=3.1.0",
     "psycopg[binary]>=3.3.6",
     "pydantic-settings>=2.16.1",
