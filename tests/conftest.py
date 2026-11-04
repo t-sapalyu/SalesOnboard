@@ -5,7 +5,7 @@ import pytest
 from psycopg import sql
 
 from salesonboard.db import connect
-from salesonboard.db.control import create_control_tables
+from salesonboard.db.control import create_control_tables, register_tenant
 from salesonboard.db.tenant import create_template_database, create_tenant_database
 
 
@@ -50,3 +50,29 @@ def test_tenant(db_conn):
     with connect(autocommit=True) as conn:
         query = sql.SQL("DROP DATABASE IF EXISTS {} WITH (FORCE)")
         conn.execute(query.format(sql.Identifier(database_name)))
+
+
+@pytest.fixture
+def batch(db_conn):
+    """A tenant and a batch in the control database, for LLM calls to log to.
+
+    Committed (not rolled back), because call_llm uses its own connections.
+    Deleted again after the test. Returns the batch_id.
+    """
+    tenant_id = "pytest_llm"
+    batch_id = "pytest-llm-batch"
+    with connect() as conn:
+        create_control_tables(conn)
+        register_tenant(conn, tenant_id, "Pytest LLM", "pytest_llm", "x", "tenant_pytest_llm")
+        conn.execute(
+            """
+            INSERT INTO batches (batch_id, tenant_id, status, file_name, file_path, file_hash)
+            VALUES (%s, %s, 'mapping', 'sales.csv', 'unused', 'unused')
+            """,
+            (batch_id, tenant_id),
+        )
+    yield batch_id
+    with connect() as conn:
+        conn.execute("DELETE FROM llm_calls WHERE batch_id = %s", (batch_id,))
+        conn.execute("DELETE FROM batches WHERE batch_id = %s", (batch_id,))
+        conn.execute("DELETE FROM tenants WHERE tenant_id = %s", (tenant_id,))
