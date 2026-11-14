@@ -6,19 +6,16 @@ from types import SimpleNamespace
 
 import pytest
 
-from salesonboard.config import get_settings
-from salesonboard.db import connect
-from salesonboard.db.control import create_control_tables, register_tenant
-from salesonboard.llm import (
+from salesonboard.agents.llm import (
     MAX_OUTPUT_TOKENS,
     CostLimitError,
     call_llm,
     estimate_max_cost,
     token_cost,
 )
+from salesonboard.config import get_settings
+from salesonboard.db import connect
 
-TENANT_ID = "pytest_llm"
-BATCH_ID = "pytest-llm-batch"
 MESSAGES = [{"role": "user", "content": "Say hello"}]
 
 
@@ -47,25 +44,7 @@ def fake_tool_call(name, arguments):
     return SimpleNamespace(function=SimpleNamespace(name=name, arguments=arguments))
 
 
-@pytest.fixture
-def batch(db_conn):
-    """A tenant and a batch, committed, because call_llm uses its own
-    connections. Deleted again after the test."""
-    with connect() as conn:
-        create_control_tables(conn)
-        register_tenant(conn, TENANT_ID, "Pytest LLM", "pytest_llm", "x", "tenant_pytest_llm")
-        conn.execute(
-            """
-            INSERT INTO batches (batch_id, tenant_id, status, file_name, file_path, file_hash)
-            VALUES (%s, %s, 'mapping', 'sales.csv', 'unused', 'unused')
-            """,
-            (BATCH_ID, TENANT_ID),
-        )
-    yield BATCH_ID
-    with connect() as conn:
-        conn.execute("DELETE FROM llm_calls WHERE batch_id = %s", (BATCH_ID,))
-        conn.execute("DELETE FROM batches WHERE batch_id = %s", (BATCH_ID,))
-        conn.execute("DELETE FROM tenants WHERE tenant_id = %s", (TENANT_ID,))
+# The batch fixture is in conftest.py.
 
 
 def set_batch_cost(batch_id, cost_eur):
