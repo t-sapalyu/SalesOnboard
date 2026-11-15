@@ -53,6 +53,28 @@ def test_tenant(db_conn):
 
 
 @pytest.fixture
+def registered_tenant(test_tenant):
+    """The throwaway test tenant, with its own database, also registered
+    (committed) in the control database, because the code under test looks it
+    up with its own connections. Its batches and their history are deleted
+    after the test. Returns {"tenant_id": ..., "database_name": ...}.
+    """
+    tenant_id = test_tenant["tenant_id"]
+    with connect() as conn:
+        create_control_tables(conn)
+        register_tenant(
+            conn, tenant_id, "Pytest tenant", "pytest_user", "x", test_tenant["database_name"]
+        )
+    yield test_tenant
+    with connect() as conn:
+        batch_ids = "SELECT batch_id FROM batches WHERE tenant_id = %s"
+        for table in ["plan_versions", "validation_results", "llm_calls", "support_tickets"]:
+            conn.execute(f"DELETE FROM {table} WHERE batch_id IN ({batch_ids})", (tenant_id,))
+        conn.execute("DELETE FROM batches WHERE tenant_id = %s", (tenant_id,))
+        conn.execute("DELETE FROM tenants WHERE tenant_id = %s", (tenant_id,))
+
+
+@pytest.fixture
 def batch(db_conn):
     """A tenant and a batch in the control database, for LLM calls to log to.
 

@@ -91,7 +91,7 @@ CREATE TABLE IF NOT EXISTS support_tickets (
     batch_id    text NOT NULL REFERENCES batches (batch_id),
     tenant_id   text NOT NULL REFERENCES tenants (tenant_id),
     step        text NOT NULL,                      -- the batch status when it was created
-    reason      text NOT NULL,                      -- customer, cost_limit, round_limit, invalid_output
+    reason      text NOT NULL,                      -- see REASONS in workflow/support_tickets.py
     note        text,                               -- what the customer wrote, if anything
     status      text NOT NULL DEFAULT 'open' CHECK (status IN ('open', 'closed')),
     created_at  timestamptz NOT NULL DEFAULT now()
