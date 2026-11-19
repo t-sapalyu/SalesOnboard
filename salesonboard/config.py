@@ -1,6 +1,7 @@
 """All settings in one place, read from environment variables or .env."""
 
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -28,6 +29,12 @@ class Settings(BaseSettings):
 
     # Total LLM spend allowed for one batch, across both agents and all rounds.
     batch_cost_limit_eur: float = 1.0
+
+    # Web app. The secret signs the login cookie, so nobody can fake one.
+    # The default is for local development only; set a long random one elsewhere.
+    session_secret: SecretStr = SecretStr("dev-only-secret-change-me")
+    # Uploaded files are saved here, as <tenant_id>/<batch_id>.csv
+    upload_dir: Path = Path("uploads")
 
     def db_url(self, dbname: str) -> str:
         """Connection string for one database on the server."""

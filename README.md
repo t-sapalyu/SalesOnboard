@@ -33,7 +33,19 @@ cp .env.sample .env   # then fill in your keys
 docker compose up -d  # Postgres on localhost:5433
 uv run python -m scripts.init_control_db
 uv run python -m scripts.seed_tenants   # demo logins company1-3
+cd frontend && npm install
 ```
+
+## Web app
+
+Two terminals, both started from the project root:
+
+```
+uv run uvicorn salesonboard.webapi.app:app --reload   # API on localhost:8000
+cd frontend && npm run dev                            # open http://localhost:5173
+```
+
+Demo logins: `company1` / `demo-company1` (same pattern for company2 and company3).
 
 ## Checks
 

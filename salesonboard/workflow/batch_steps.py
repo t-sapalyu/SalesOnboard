@@ -60,14 +60,29 @@ MAX_INVESTIGATOR_ROUNDS = 2
 # --- Steps ------------------------------------------------------------------
 
 
-def create_batch(tenant_id: str, file_path: Path) -> str:
+def new_batch_id() -> str:
+    return uuid.uuid4().hex[:12]
+
+
+def create_batch(
+    tenant_id: str,
+    file_path: Path,
+    batch_id: str | None = None,
+    file_name: str | None = None,
+) -> str:
     """Register an uploaded file as a new batch. Returns the batch id.
+
+    The web app passes batch_id (it saves the file as <batch_id>.csv first)
+    and file_name (the name the customer uploaded). The CLI passes neither.
 
     The database refuses a second active batch for the same customer
     (the one_active_batch_per_tenant index).
     """
     source = read_source_file(file_path)
-    batch_id = uuid.uuid4().hex[:12]
+    if batch_id is None:
+        batch_id = new_batch_id()
+    if file_name is None:
+        file_name = file_path.name
     with connect() as conn:
         if get_tenant(conn, tenant_id) is None:
             raise ValueError(f"Unknown tenant {tenant_id!r}")
@@ -76,7 +91,7 @@ def create_batch(tenant_id: str, file_path: Path) -> str:
             batch_id=batch_id,
             tenant_id=tenant_id,
             status=FIRST_STATUS,
-            file_name=file_path.name,
+            file_name=file_name,
             file_path=str(file_path),
             file_hash=file_hash(file_path),
             row_count=len(source.data),

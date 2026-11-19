@@ -7,6 +7,11 @@ from psycopg import sql
 from salesonboard.db import connect
 from salesonboard.db.control import create_control_tables, register_tenant
 from salesonboard.db.tenant import create_template_database, create_tenant_database
+from salesonboard.passwords import hash_password
+
+# Login of the registered_tenant fixture, for the web tests.
+TEST_USERNAME = "pytest_user"
+TEST_PASSWORD = "pytest-password"
 
 
 @pytest.fixture
@@ -56,14 +61,20 @@ def test_tenant(db_conn):
 def registered_tenant(test_tenant):
     """The throwaway test tenant, with its own database, also registered
     (committed) in the control database, because the code under test looks it
-    up with its own connections. Its batches and their history are deleted
-    after the test. Returns {"tenant_id": ..., "database_name": ...}.
+    up with its own connections. It can log in with TEST_USERNAME and
+    TEST_PASSWORD. Its batches and their history are deleted after the test.
+    Returns {"tenant_id": ..., "database_name": ...}.
     """
     tenant_id = test_tenant["tenant_id"]
     with connect() as conn:
         create_control_tables(conn)
         register_tenant(
-            conn, tenant_id, "Pytest tenant", "pytest_user", "x", test_tenant["database_name"]
+            conn,
+            tenant_id,
+            "Pytest tenant",
+            TEST_USERNAME,
+            hash_password(TEST_PASSWORD),
+            test_tenant["database_name"],
         )
     yield test_tenant
     with connect() as conn:

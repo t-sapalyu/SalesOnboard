@@ -51,6 +51,17 @@ def get_tenant(conn: psycopg.Connection, tenant_id: str) -> dict | None:
     return {"tenant_id": row[0], "name": row[1], "username": row[2], "database_name": row[3]}
 
 
+def get_login(conn: psycopg.Connection, username: str) -> dict | None:
+    """The tenant and password hash for a login name. Only used to check a password."""
+    row = conn.execute(
+        "SELECT tenant_id, name, password_hash FROM tenants WHERE username = %s",
+        (username,),
+    ).fetchone()
+    if row is None:
+        return None
+    return {"tenant_id": row[0], "name": row[1], "password_hash": row[2]}
+
+
 # ---------------------------------------------------------------------------
 # Batches and their audit trail. The workflow rules (which status may follow
 # which) are in workflow/batch_status.py; these functions only read and write.
